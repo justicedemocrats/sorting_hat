@@ -1,0 +1,42 @@
+<form action="/?secret=<%= @secret %>" method="post" enctype="multipart/form-data">
+
+  <fieldset>
+    <legend> Upload a file for filtering </legend>
+
+    <div class="input-field">
+      <span class="file-button">
+        <%= file_input :upload, :file, [required: true, accept: ".csv"] %>
+        <label class="button button-dark" for="upload_file">Select a File</label>
+      </span>
+    </div>
+
+    <div class="input-field">
+      <label for="col_num"> What column number contains your phone numbers? </label>
+      <input type="number" name="col_num" required="true" min="1" />
+    </div>
+
+    <div class="input-field">
+      <label for="email"> What email should we send the results to? </label>
+      <input type="email" name="email" required="true" />
+    </div>
+
+
+    <input type="hidden" value="<%= csrf_token() %>" name="_csrf_token">
+
+    <div class="input-field">
+      <button class="button" type="submit">
+        Submit
+      </button>
+    </div>
+  </fieldset>
+</form>
+
+<fieldset>
+  <legend> Current Jobs </legend>
+  <%= if length(@queued_jobs) do %>
+    <h3> No jobs queued right now. </h3>
+  <% else %>
+    <h3> Your Jobs Here </h3>
+  <% end %>
+
+</fieldset>
