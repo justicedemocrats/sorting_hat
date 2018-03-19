@@ -48,9 +48,12 @@ config :phoenix, :stacktrace_depth, 20
 
 config :sorting_hat,
   mongodb_username: System.get_env("MONGO_USERNAME"),
-  mongodb_hostname: System.get_env("MONGO_HOSTNAME"),
   mongodb_password: System.get_env("MONGO_PASSWORD"),
-  mongodb_port: System.get_env("MONGO_PORT")
+  mongodb_port: System.get_env("MONGO_PORT"),
+  mongodb_seeds: [
+    System.get_env("MONGO_SEED_1"),
+    System.get_env("MONGO_SEED_2")
+  ]
 
 config :sorting_hat, SortingHat.Mailer,
   adapter: Swoosh.Adapters.Mailgun,

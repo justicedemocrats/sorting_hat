@@ -12,7 +12,7 @@ defmodule SortingHat do
           database: "phones",
           username: Application.get_env(:sorting_hat, :mongodb_username),
           password: Application.get_env(:sorting_hat, :mongodb_password),
-          hostname: Application.get_env(:sorting_hat, :mongodb_hostname),
+          seeds: Application.get_env(:sorting_hat, :mongodb_seeds),
           port: Application.get_env(:sorting_hat, :mongodb_port)
         ]
       ]),

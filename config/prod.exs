@@ -10,7 +10,7 @@ config :logger, level: :info
 
 config :sorting_hat,
   mongodb_username: "${MONGO_USERNAME}",
-  mongodb_hostname: "${MONGO_HOSTNAME}",
+  mongodb_seeds: ["${MONGO_SEED_1}", "${MONGO_SEED_2}"],
   mongodb_password: "${MONGO_PASSWORD}",
   mongodb_port: "${MONGO_PORT}"
 

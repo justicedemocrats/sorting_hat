@@ -33,10 +33,28 @@
 
 <fieldset>
   <legend> Current Jobs </legend>
-  <%= if length(@queued_jobs) do %>
+  <%= if length(@queued) == 0 do %>
     <h3> No jobs queued right now. </h3>
   <% else %>
-    <h3> Your Jobs Here </h3>
+    <table>
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th>File Name</th>
+        <th>Lines Processed</th>
+        <th>Sending Results To</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for job <- @queued do %>
+        <tr>
+          <td> <%= job.status.status %> </td>
+          <td> <%= job.task.filename %> </td>
+          <td> <%= job.status.progress %> </td>
+          <td> <%= job.task.email %> </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
   <% end %>
-
 </fieldset>

@@ -4,18 +4,21 @@ defmodule SortingHat.Lookup do
 
   @service SortingHat.Twilio
 
-  def lookup(phone) when is_binary(phone) do
+  def lookup(unnormalized_phone) when is_binary(unnormalized_phone) do
+    phone = easy_normalize(unnormalized_phone)
+
     case Db.cached_result(phone) do
       nil ->
         result = @service.lookup(phone)
         {Db.upsert(phone, result), 1}
 
       result ->
-        {result, 0}
+        {result["type"], 0}
     end
   end
 
-  def lookup(phones) when is_list(phones) do
+  def lookup(unnormalized_phones) when is_list(unnormalized_phones) do
+    phones = Enum.map(unnormalized_phones, &easy_normalize/1)
     {not_found, results} = Db.cached_result(phones)
 
     lookup_count = length(not_found)
@@ -32,5 +35,13 @@ defmodule SortingHat.Lookup do
       |> Enum.into(%{})
 
     {Map.merge(results, lookups), lookup_count}
+  end
+
+  def easy_normalize(number) do
+    number
+    |> String.replace(" ", "", global: true)
+    |> String.replace("-", "", global: true)
+    |> String.replace("(", "", global: true)
+    |> String.replace(")", "", global: true)
   end
 end

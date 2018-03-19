@@ -20,6 +20,18 @@ defmodule SortingHat.Db do
   end
 
   def upsert(number, result) do
-    Mongo.update_one(:mongo, "phones", ~m(number)a, %{"$set" => result}, upsert: true)
+    Mongo.update_one(
+      :mongo,
+      "phones",
+      ~m(number)a,
+      %{"$set" => result},
+      upsert: true
+    )
+  end
+
+  def replace_many(docs) do
+    numbers = Enum.map(docs, fn ~m(number) -> number end)
+    Mongo.delete_many!(:mongo, "phones", %{"number" => %{"$in" => numbers}})
+    Mongo.insert_many!(:mongo, "phones", docs)
   end
 end
