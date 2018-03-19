@@ -45,15 +45,12 @@ defmodule SortingHat.Worker do
   end
 
   def update_progress({chunk, idx}) do
-    progress(idx)
+    progress(idx * @batch_size)
     chunk
   end
 
   def process_chunk(chunk, col_num_string, files, accountant) do
     {col_num, _} = Integer.parse(col_num_string)
-    IO.inspect(List.first(chunk))
-    IO.inspect(col_num - 1)
-    IO.inspect(Enum.at(List.first(chunk), col_num - 1))
     rows_by_phone = Enum.map(chunk, &{Enum.at(&1, col_num - 1), &1}) |> Enum.into(%{})
     phones = Map.keys(rows_by_phone)
     {results, lookup_count} = SortingHat.Lookup.lookup(phones)

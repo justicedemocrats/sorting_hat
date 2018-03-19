@@ -5,15 +5,20 @@ defmodule SortingHat.Lookup do
   @service SortingHat.Twilio
 
   def lookup(unnormalized_phone) when is_binary(unnormalized_phone) do
-    phone = easy_normalize(unnormalized_phone)
+    try do
+      phone = easy_normalize(unnormalized_phone)
 
-    case Db.cached_result(phone) do
-      nil ->
-        result = @service.lookup(phone)
-        {Db.upsert(phone, result), 1}
+      case Db.cached_result(phone) do
+        nil ->
+          result = @service.lookup(phone)
+          {Db.upsert(phone, result), 1}
 
-      result ->
-        {result["type"], 0}
+        result ->
+          {result["type"], 0}
+      end
+    rescue
+      e ->
+        nil
     end
   end
 
