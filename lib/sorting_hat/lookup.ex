@@ -18,7 +18,7 @@ defmodule SortingHat.Lookup do
       end
     rescue
       e ->
-        nil
+        {"not found", 1}
     end
   end
 
@@ -31,9 +31,13 @@ defmodule SortingHat.Lookup do
     lookups =
       Enum.map(not_found, fn number ->
         Task.async(fn ->
-          ~m(type) = result = @service.lookup(number)
-          Db.upsert(number, result)
-          {number, type}
+          try do
+            ~m(type) = result = @service.lookup(number)
+            Db.upsert(number, result)
+            {number, type}
+          rescue
+            e -> {number, "unknown"}
+          end
         end)
       end)
       |> Enum.map(&Task.await/1)
