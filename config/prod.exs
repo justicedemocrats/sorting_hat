@@ -18,3 +18,7 @@ config :sorting_hat, SortingHat.Mailer,
   adapter: Swoosh.Adapters.Mailgun,
   api_key: "${MAILGUN_API_KEY}",
   domain: "${MAILGUN_DOMAIN}"
+
+config :ex_twilio,
+  account_sid: "${TWILIO_ACCOUNT_SID}",
+  auth_token: "${TWILIO_AUTH_TOKEN}"

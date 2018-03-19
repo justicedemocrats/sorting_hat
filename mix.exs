@@ -44,7 +44,8 @@ defmodule SortingHat.Mixfile do
       {:ex_twilio, github: "danielberkompas/ex_twilio"},
       {:nimble_csv, "~> 0.2.0"},
       {:honeydew, "~> 1.0.4"},
-      {:swoosh, "~> 0.13"}
+      {:swoosh, "~> 0.13"},
+      {:distillery, "~> 1.5", runtime: false}
     ]
   end
 end
