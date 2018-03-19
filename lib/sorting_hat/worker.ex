@@ -5,8 +5,7 @@ defmodule SortingHat.Worker do
   import ShortMaps
 
   @behaviour Honeydew.Worker
-  # @batch_size 100
-  @batch_size 1
+  @batch_size 100
 
   def process_file(~m(path filename email col_num)) do
     File.mkdir_p("./files")
@@ -49,7 +48,6 @@ defmodule SortingHat.Worker do
   end
 
   def process_chunk(chunk, col_num_string, files, accountant) do
-    :timer.sleep(30_000)
     {col_num, _} = Integer.parse(col_num_string)
     IO.inspect(List.first(chunk))
     IO.inspect(col_num - 1)
