@@ -29,6 +29,7 @@ defmodule SortingHat.PageController do
 
   def queue(conn, ~m(col_num upload email)) do
     ~m(path filename)a = upload["file"]
+    File.mkdir_p("./input-files")
     new_path = "./input-files/filename-#{DateTime.utc_now() |> DateTime.to_unix()}"
     File.rename(path, new_path)
     path = new_path

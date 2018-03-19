@@ -17,6 +17,8 @@ defmodule SortingHat.Worker do
       |> Enum.reverse()
       |> Enum.join(".")
 
+    File.mkdir_p("./output-files")
+
     files =
       Enum.map(~w(mobile landline other processed), fn type ->
         new_path = "./output-files/#{without_type}-#{type}.csv"
