@@ -4,8 +4,9 @@
     <legend> Upload a file for filtering </legend>
 
     <div class="input-field">
-      <%= file_input :upload, :file, [required: true, accept: ".csv"] %>
       <label class="button button-dark" for="upload_file">Select a File</label>
+      <br/> <br/>
+      <%= file_input :upload, :file, [required: true, accept: ".csv"] %>
     </div>
 
     <div class="input-field">
