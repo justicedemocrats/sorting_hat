@@ -22,3 +22,5 @@ config :sorting_hat, SortingHat.Mailer,
 config :ex_twilio,
   account_sid: "${TWILIO_ACCOUNT_SID}",
   auth_token: "${TWILIO_AUTH_TOKEN}"
+
+config :sorting_hat, secret: "${SECRET}"
