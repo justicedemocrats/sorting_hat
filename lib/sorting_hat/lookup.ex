@@ -23,7 +23,7 @@ defmodule SortingHat.Lookup do
   end
 
   def lookup(unnormalized_phones) when is_list(unnormalized_phones) do
-    phones = Enum.map(unnormalized_phones, &easy_normalize/1)
+    phones = easy_normalize(unnormalized_phones)
     {not_found, results} = Db.cached_result(phones)
 
     lookup_count = length(not_found)
@@ -36,7 +36,7 @@ defmodule SortingHat.Lookup do
             Db.upsert(number, result)
             {number, type}
           rescue
-            e -> {number, "unknown"}
+            _e -> {number, "unknown"}
           end
         end)
       end)
@@ -46,11 +46,15 @@ defmodule SortingHat.Lookup do
     {Map.merge(results, lookups), lookup_count}
   end
 
-  def easy_normalize(number) do
+  def easy_normalize(number) when is_binary(number) do
     number
     |> String.replace(" ", "", global: true)
     |> String.replace("-", "", global: true)
     |> String.replace("(", "", global: true)
     |> String.replace(")", "", global: true)
+  end
+
+  def easy_normalize(numbers) when is_list(numbers) do
+    Enum.map(numbers, &easy_normalize/1)
   end
 end

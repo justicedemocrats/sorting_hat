@@ -3,6 +3,7 @@ defmodule SortingHat.Worker do
   alias NimbleCSV.RFC4180, as: CSV
   alias SortingHat.Accountant
   import ShortMaps
+  require Logger
 
   @behaviour Honeydew.Worker
   @batch_size 100
@@ -51,7 +52,11 @@ defmodule SortingHat.Worker do
 
   def process_chunk(chunk, col_num_string, files, accountant) do
     {col_num, _} = Integer.parse(col_num_string)
-    rows_by_phone = Enum.map(chunk, &{Enum.at(&1, col_num - 1), &1}) |> Enum.into(%{})
+
+    rows_by_phone =
+      Enum.map(chunk, &{SortingHat.Lookup.easy_normalize(Enum.at(&1, col_num - 1)), &1})
+      |> Enum.into(%{})
+
     phones = Map.keys(rows_by_phone)
     {results, lookup_count} = SortingHat.Lookup.lookup(phones)
 
@@ -63,7 +68,7 @@ defmodule SortingHat.Worker do
       processed_file = get_in(files, ~w(processed file))
       row = Map.get(rows_by_phone, number)
 
-      IO.inspect(row)
+      Logger.info("Processed: #{number}")
       row_string = CSV.dump_to_iodata([row]) |> IO.iodata_to_binary()
 
       processed_row_string =
