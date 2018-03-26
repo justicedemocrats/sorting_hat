@@ -1,21 +1,44 @@
-// Brunch automatically concatenates all files in your
-// watched paths. Those paths can be configured at
-// config.paths.watched in "brunch-config.js".
-//
-// However, those files will only be executed if
-// explicitly imported. The only exception are files
-// in vendor, which are never wrapped in imports and
-// therefore are always executed.
+import Papa from "papaparse";
 
-// Import dependencies
-//
-// If you no longer want to use a dependency, remember
-// to also remove its path from "config.paths.watched".
-import "phoenix_html"
+var max_rows = 10;
 
-// Import local files
-//
-// Local files can be imported directly using relative
-// paths "./socket" or full ones "web/static/js/socket".
+function getFile() {
+  return document.getElementById("file-upload").files[0];
+}
 
-// import socket from "./socket"
+function clearPreviewTable() {
+  document.getElementById("table").style.display = "none";
+  document.getElementById("table-body").innerHTML = "";
+}
+
+function appendPreviewRow(phoneNumber) {
+  document.getElementById("table").style.display = "block";
+  var html = `<td>${phoneNumber}</td>`;
+  var el = document.createElement("tr");
+  el.innerHTML = html;
+  document.getElementById("table-body").appendChild(el);
+}
+
+document.getElementById("col-num").onchange = function(ev) {
+  clearPreviewTable();
+
+  var rows_seen = 0;
+  var file = getFile();
+
+  if (file) {
+    Papa.parse(file, {
+      header: false,
+      step: function(results, parser) {
+        if (rows_seen > 0) {
+          appendPreviewRow(results.data[0][ev.target.value]);
+        }
+
+        rows_seen++;
+
+        if (rows_seen > max_rows) {
+          parser.pause();
+        }
+      }
+    });
+  }
+};

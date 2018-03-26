@@ -4,21 +4,26 @@
     <legend> Upload a file for filtering </legend>
 
     <div class="input-field">
-      <label class="button button-dark" for="upload_file">Select a File</label>
-      <br/> <br/>
-      <%= file_input :upload, :file, [required: true, accept: ".csv"] %>
+      <%= file_input :upload, :file, [required: true, accept: ".csv", id: "file-upload"] %>
     </div>
 
     <div class="input-field">
       <label for="col_num"> What column number contains your phone numbers? </label>
-      <input type="number" name="col_num" required="true" min="1" />
+      <input type="number" name="col_num" required="true" min="1" id="col-num" />
     </div>
+
+    <table id="table" style="display:none;" class="table-striped">
+      <thead>
+        <tr><th> Selected Column Preview </th></tr>
+      </thead>
+      <tbody id="table-body">
+      </tbody>
+    </table>
 
     <div class="input-field">
       <label for="email"> What email should we send the results to? </label>
       <input type="email" name="email" required="true" />
     </div>
-
 
     <input type="hidden" value="<%= csrf_token() %>" name="_csrf_token">
 
@@ -57,3 +62,5 @@
   </table>
   <% end %>
 </fieldset>
+
+<script src="/js/app.js"></script>
