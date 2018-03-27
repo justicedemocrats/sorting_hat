@@ -20,10 +20,17 @@ defmodule SortingHat.Worker do
 
     File.mkdir_p("./output-files")
 
+    header_row = extract_header_line(path)
+
     files =
       Enum.map(~w(mobile landline other processed), fn type ->
         new_path = "./output-files/#{without_type}-#{type}.csv"
         {:ok, file} = File.open(new_path, [:write])
+
+        if type == "processed",
+          do: IO.binwrite(file, header_row <> ~s(,"Type"\n)),
+          else: IO.binwrite(file, header_row <> ~s(\n))
+
         {type, ~m(path file new_path)}
       end)
       |> Enum.into(%{})
@@ -77,5 +84,12 @@ defmodule SortingHat.Worker do
       IO.binwrite(type_file, row_string)
       IO.binwrite(processed_file, processed_row_string)
     end)
+  end
+
+  def extract_header_line(file) do
+    {:ok, pid} = File.open(file)
+    line = IO.binread(pid, :line)
+    File.close(pid)
+    String.trim(line)
   end
 end
