@@ -40,6 +40,7 @@
   <%= if length(@queued) == 0 do %>
     <h3> No jobs queued right now. </h3>
   <% else %>
+    <h6> Refresh to see progress updates. </h6>
     <table>
     <thead>
       <tr>

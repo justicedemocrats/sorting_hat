@@ -30,7 +30,7 @@ document.getElementById("col-num").onchange = function(ev) {
       header: false,
       step: function(results, parser) {
         if (rows_seen > 0) {
-          appendPreviewRow(results.data[0][ev.target.value]);
+          appendPreviewRow(results.data[0][ev.target.value - 1]);
         }
 
         rows_seen++;
