@@ -8,6 +8,8 @@ defmodule SortingHat.Worker do
   @behaviour Honeydew.Worker
   @batch_size 100
 
+  def report_complete_webhook, do: Application.get_env(:sorting_hat, :report_complete_webhook)
+
   def process_file(~m(path filename email col_num)) do
     File.mkdir_p("./files")
 
@@ -50,6 +52,8 @@ defmodule SortingHat.Worker do
 
     SortingHat.ResultsEmail.create(email, attachment_paths, cost)
     |> SortingHat.Mailer.deliver()
+
+    HTTPoison.post(report_complete_webhook(), Poison.encode!(~m(cost email filename)))
   end
 
   def update_progress({chunk, idx}) do

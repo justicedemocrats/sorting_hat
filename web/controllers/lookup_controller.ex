@@ -3,7 +3,7 @@ defmodule SortingHat.LookupController do
   import ShortMaps
 
   def lookup(conn, params) do
-    result = SortingHat.Lookup.lookup(params["phone"] || params["phones"])
-    json(conn, result)
+    {result, cost} = SortingHat.Lookup.lookup(params["phone"] || params["phones"])
+    json(conn, ~m(result cost))
   end
 end

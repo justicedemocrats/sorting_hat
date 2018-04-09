@@ -24,3 +24,5 @@ config :ex_twilio,
   auth_token: "${TWILIO_AUTH_TOKEN}"
 
 config :sorting_hat, secret: "${SECRET}"
+
+config :sorting_hat, report_complete_webhook: "${REPORT_COMPLETE_WEBHOOK}"
