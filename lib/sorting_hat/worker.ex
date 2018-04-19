@@ -3,12 +3,14 @@ defmodule SortingHat.Worker do
   alias NimbleCSV.RFC4180, as: CSV
   alias SortingHat.Accountant
   import ShortMaps
+  import SweetXml
   require Logger
 
   @behaviour Honeydew.Worker
   @batch_size 100
 
   def report_complete_webhook, do: Application.get_env(:sorting_hat, :report_complete_webhook)
+  def bucket_name, do: Application.get_env(:sorting_hat, :aws_bucket_name)
 
   def process_file(~m(path filename email col_num)) do
     File.mkdir_p("./files")
@@ -27,13 +29,14 @@ defmodule SortingHat.Worker do
     files =
       Enum.map(~w(mobile landline other processed), fn type ->
         new_path = "./output-files/#{without_type}-#{type}.csv"
+        nice_name = "#{without_type}-#{type}"
         {:ok, file} = File.open(new_path, [:write])
 
         if type == "processed",
           do: IO.binwrite(file, header_row <> ~s(,"Type"\n)),
           else: IO.binwrite(file, header_row <> ~s(\n))
 
-        {type, ~m(path file new_path)}
+        {type, ~m(path file new_path nice_name)}
       end)
       |> Enum.into(%{})
 
@@ -47,10 +50,15 @@ defmodule SortingHat.Worker do
     |> Stream.map(&process_chunk(&1, col_num, files, accountant))
     |> Stream.run()
 
-    attachment_paths = Map.values(files) |> Enum.map(& &1["new_path"])
+    s3_urls =
+      Map.values(files)
+      |> Enum.map(fn ~m(new_path nice_name) ->
+        upload_to_s3(new_path, "#{nice_name}-#{rand_digits()}.csv")
+      end)
+
     cost = Accountant.get_cost(accountant)
 
-    SortingHat.ResultsEmail.create(email, attachment_paths, cost)
+    SortingHat.ResultsEmail.create(email, s3_urls, cost)
     |> SortingHat.Mailer.deliver()
 
     HTTPoison.post(report_complete_webhook(), Poison.encode!(~m(cost email filename)))
@@ -95,5 +103,21 @@ defmodule SortingHat.Worker do
     line = IO.binread(pid, :line)
     File.close(pid)
     String.trim(line)
+  end
+
+  def upload_to_s3(path, file_name) do
+    {:ok, %{body: body}} =
+      path
+      |> ExAws.S3.Upload.stream_file()
+      |> ExAws.S3.upload(bucket_name(), file_name)
+      |> ExAws.request()
+
+    body |> xpath(~x"Location/text()")
+  end
+
+  def rand_digits do
+    1..5
+    |> Enum.map(fn _ -> Enum.random(0..9) end)
+    |> Enum.join("")
   end
 end

@@ -45,6 +45,9 @@ defmodule SortingHat.Mixfile do
       {:nimble_csv, "~> 0.2.0"},
       {:honeydew, "~> 1.0.4"},
       {:swoosh, "~> 0.13"},
+      {:ex_aws, "~> 2.0"},
+      {:ex_aws_s3, "~> 2.0"},
+      {:sweet_xml, "~> 0.6"},
       {:distillery, "~> 1.5", runtime: false}
     ]
   end

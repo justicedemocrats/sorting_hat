@@ -64,4 +64,11 @@ config :ex_twilio,
   account_sid: System.get_env("TWILIO_ACCOUNT_SID"),
   auth_token: System.get_env("TWILIO_AUTH_TOKEN")
 
+config :ex_aws,
+  access_key_id: System.get_env("AWS_ACCESS_KEY_ID"),
+  secret_access_key: System.get_env("AWS_SECRET_ACCESS_KEY"),
+  region: System.get_env("AWS_BUCKET_REGION")
+
+config :sorting_hat, aws_bucket_name: System.get_env("AWS_BUCKET_NAME")
+
 config :sorting_hat, report_complete_webhook: System.get_env("REPORT_COMPLETE_WEBHOOK")

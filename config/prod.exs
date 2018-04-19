@@ -23,6 +23,11 @@ config :ex_twilio,
   account_sid: "${TWILIO_ACCOUNT_SID}",
   auth_token: "${TWILIO_AUTH_TOKEN}"
 
-config :sorting_hat, secret: "${SECRET}"
+config :ex_aws,
+  access_key_id: "${AWS_ACCESS_KEY_ID}",
+  secret_access_key: "${AWS_SECRET_ACCESS_KEY}",
+  region: "${AWS_BUCKET_REGION}"
 
+config :sorting_hat, aws_bucket_name: "${AWS_BUCKET_NAME}"
+config :sorting_hat, secret: "${SECRET}"
 config :sorting_hat, report_complete_webhook: "${REPORT_COMPLETE_WEBHOOK}"
