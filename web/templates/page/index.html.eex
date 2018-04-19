@@ -3,9 +3,11 @@
   <fieldset>
     <legend> Upload a file for filtering </legend>
 
+    <p class="input-hint"> Note: the upload limit is 20MB. If your file is bigger than that, please break it into chunks. </p>
     <div class="input-field">
       <%= file_input :upload, :file, [required: true, accept: ".csv", id: "file-upload"] %>
     </div>
+
 
     <div class="input-field">
       <label for="col_num"> What column number contains your phone numbers? </label>
