@@ -28,7 +28,11 @@ defmodule SortingHat.Endpoint do
 
   plug(
     Plug.Parsers,
-    parsers: [:urlencoded, :multipart, :json],
+    parsers: [
+      :url_encoded,
+      # Increase to 20MB max upload
+      {:multipart, length: 20_000_000}
+    ],
     pass: ["*/*"],
     json_decoder: Poison
   )
