@@ -55,13 +55,15 @@ defmodule SortingHat.Worker do
       |> Enum.map(fn ~m(new_path nice_name) ->
         upload_to_s3(new_path, "#{nice_name}-#{rand_digits()}.csv")
       end)
+      |> Enum.map(&List.to_string/1)
 
     cost = Accountant.get_cost(accountant)
 
     SortingHat.ResultsEmail.create(email, s3_urls, cost)
     |> SortingHat.Mailer.deliver()
 
-    HTTPoison.post(report_complete_webhook(), Poison.encode!(~m(cost email filename)))
+    body = ~m(cost email filename s3_urls) |> IO.inspect()
+    HTTPoison.post(report_complete_webhook(), Poison.encode!(body) |> IO.inspect())
   end
 
   def update_progress({chunk, idx}) do
