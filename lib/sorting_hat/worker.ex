@@ -68,7 +68,7 @@ defmodule SortingHat.Worker do
       end)
       |> Enum.into(%{})
 
-    SortingHat.ResultsEmail.create(email, s3_urls, cost)
+    SortingHat.ResultsEmail.create(email, s3_urls, cost, counts)
     |> SortingHat.Mailer.deliver()
 
     body = ~m(cost email filename s3_urls counts) |> IO.inspect()
