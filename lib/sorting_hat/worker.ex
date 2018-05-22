@@ -27,7 +27,7 @@ defmodule SortingHat.Worker do
     header_row = extract_header_line(path)
 
     files =
-      Enum.map(~w(mobile landline other processed), fn type ->
+      Enum.map(~w(mobile landline other processed non_landline), fn type ->
         new_path = "./output-files/#{without_type}-#{type}.csv"
         nice_name = "#{without_type}-#{type}"
         {:ok, file} = File.open(new_path, [:write])
@@ -59,10 +59,19 @@ defmodule SortingHat.Worker do
 
     cost = Accountant.get_cost(accountant)
 
+    counts =
+      Enum.map(files, fn {key, ~m(new_path)} ->
+        {output, _code} = System.cmd("wc", ["-l", new_path])
+        [count, _file] = String.split(output)
+        {as_int, _} = Integer.parse(count)
+        {key, as_int - 1}
+      end)
+      |> Enum.into(%{})
+
     SortingHat.ResultsEmail.create(email, s3_urls, cost)
     |> SortingHat.Mailer.deliver()
 
-    body = ~m(cost email filename s3_urls) |> IO.inspect()
+    body = ~m(cost email filename s3_urls counts) |> IO.inspect()
     HTTPoison.post(report_complete_webhook(), Poison.encode!(body) |> IO.inspect())
   end
 
@@ -86,6 +95,7 @@ defmodule SortingHat.Worker do
     Enum.each(phones, fn number ->
       type = Map.get(results, number)
       type_file = get_in(files, [type, "file"])
+      non_landline_file = get_in(files, ~w(non_landline file))
       processed_file = get_in(files, ~w(processed file))
       row = Map.get(rows_by_phone, number)
 
@@ -96,6 +106,7 @@ defmodule SortingHat.Worker do
         [Enum.concat(row, [type])] |> CSV.dump_to_iodata() |> IO.iodata_to_binary()
 
       IO.binwrite(type_file, row_string)
+      IO.binwrite(non_landline_file, row_string)
       IO.binwrite(processed_file, processed_row_string)
     end)
   end
