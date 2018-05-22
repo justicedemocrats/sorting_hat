@@ -27,7 +27,7 @@ defmodule SortingHat.Worker do
     header_row = extract_header_line(path)
 
     files =
-      Enum.map(~w(mobile landline other processed non_landline), fn type ->
+      Enum.map(~w(mobile landline other processed hci), fn type ->
         new_path = "./output-files/#{without_type}-#{type}.csv"
         nice_name = "#{without_type}-#{type}"
         {:ok, file} = File.open(new_path, [:write])
@@ -95,7 +95,7 @@ defmodule SortingHat.Worker do
     Enum.each(phones, fn number ->
       type = Map.get(results, number)
       type_file = get_in(files, [type, "file"])
-      non_landline_file = get_in(files, ~w(non_landline file))
+      hci_file = get_in(files, ~w(hci file))
       processed_file = get_in(files, ~w(processed file))
       row = Map.get(rows_by_phone, number)
 
@@ -106,8 +106,11 @@ defmodule SortingHat.Worker do
         [Enum.concat(row, [type])] |> CSV.dump_to_iodata() |> IO.iodata_to_binary()
 
       IO.binwrite(type_file, row_string)
-      IO.binwrite(non_landline_file, row_string)
       IO.binwrite(processed_file, processed_row_string)
+
+      if type != "landline" do
+        IO.binwrite(hci_file, row_string)
+      end
     end)
   end
 
